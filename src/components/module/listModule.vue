@@ -1,18 +1,15 @@
 <template>
   <div>
-    <h1>Lista de Módulos</h1>
+    <h3>Lista de Módulos</h3>
     <a-list
-      class="module-list"
       :loading="initLoading"
-      item-layout="horizontal"
       :data-source="filteredModules"
-      bordered
+      size="small"
+      class="container"
     >
       <template #renderItem="{ item: module }">
         <a-list-item :key="module.id">
-          <a-list-item-meta
-            :title="module.name"
-          />
+          {{ module.name }}
           <template #actions>
             <a-space>
               <a-button @click="editModule(module)" type="primary">
@@ -225,7 +222,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.module-list {
-  min-height: 200px;
-}
+
 </style>

@@ -31,11 +31,11 @@ import AssignmentDetail from '@/views/Portal/Assignments/viewAssignment.vue'
 
 //COmponentes para subidas
 import AssignmentSubmissions from '@/views/Portal/Revisiones/SubmisionList_assignment.vue'
-import GradeSubmission from '@/views/Portal/Assignments/viewSubmission.vue'
+import GradeSubmission from '@/views/Portal/Submissions/viewSubmission.vue'
 //Componentes para contenido
-import ContentList from '@/views/Portal/Assignments/listContents.vue'
-import ContentCreate from '@/views/Portal/Assignments/createContent.vue'
-import ContentDetail from '@/views/Portal/Assignments/viewContent.vue'
+import ContentList from '@/views/Portal/Content/listContents.vue'
+import ContentCreate from '@/views/Portal/Content/createContent.vue'
+import ContentDetail from '@/views/Portal/Content/viewContent.vue'
 
 //Componentes para usuarios
 import UserList from '@/components/user/listUser.vue';
@@ -51,6 +51,14 @@ import EnrollmentView from '@/components/enrollment/detailEnrollment.vue';
 import PaymentList from '@/components/payments/listPayment.vue';
 import PaymentCreate from '@/components/payments/createPayment.vue';
 import PaymentDetail from '@/components/payments/detailPayment.vue';
+
+//Para predicciones
+import Predictions from  '@/components/prediction/predictionList.vue';
+import  PredictionDetail from  '@/components/prediction/predictionDetail.vue';
+
+//Publico
+// import Identificador from '@/views/identificadorPublic.vue'
+
 
 //Para portal
 import mycalendar from '@/views/Portal/Untils/myCalendar.vue';
@@ -93,7 +101,7 @@ const routes: Array<RouteRecordRaw> = [
             props: true
           },
           {
-            path: 'assignment/:assignmentID/calificar',
+            path: 'assignment/:assignmentId/:studentId/calificar',
             name: 'Calificar',
             component: GradeSubmission,
             props: true
@@ -123,6 +131,9 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/grupos/:id', name: 'GrupoDetail', component: GrupoDetail },
   { path: '/grupos/:id/edit', name: 'GrupoEdit', component: GrupoEdit },
 
+  //Predicciones
+  { path: '/predictions', name:'PredictionsList',component: Predictions },
+  { path: '/predictions/:id', name: 'PredictionDetails', component: PredictionDetail, props: true },
     //Componentes para user
     { path: '/users', component: UserList },
     { path: '/create-user', component: UserCreate },
@@ -139,6 +150,7 @@ const routes: Array<RouteRecordRaw> = [
     {path: "/pagos/:id", name: "viewPayment", component: PaymentDetail, props:true },
     ]
   },
+  // { path: '/clasificador', name:'identificator' ,component: Identificador },
 
 ]
 

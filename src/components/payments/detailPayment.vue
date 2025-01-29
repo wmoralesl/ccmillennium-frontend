@@ -3,19 +3,19 @@
     <a-card title="Detalles del Pago" bordered>
       <a-row :gutter="[16, 16]">
         <a-col :span="12">
-          <a-statistic title="ID" :value="payment.id" />
+          <a-statistic title="Boleta de pago No." :value="payment.id" />
         </a-col>
         <a-col :span="12">
           <a-statistic title="Curso" :value="payment.course_name" />
         </a-col>
         <a-col :span="12">
-          <a-statistic title="Nombre del Estudiante" :value="payment.student_name" /> <!-- Agregado -->
+          <a-statistic title="Nombre del Estudiante" :value="payment.student_name" />
         </a-col>
         <a-col :span="12">
           <a-statistic title="Fecha de Pago" :value="formattedPaymentDate" />
         </a-col>
         <a-col :span="12">
-          <a-statistic title="Mes Pagado" :value="payment.month_paid" />
+          <a-statistic title="Mes Pagado" :value="monthPaidName" />
         </a-col>
         <a-col :span="12">
           <a-statistic title="Monto" :value="formattedAmount" />
@@ -27,10 +27,10 @@
 
       <div style="margin-top: 24px; text-align: center;">
         <router-link to="/pagos">
-          <a-button type="default">← Regresar a la lista de pagos</a-button>
+          <a-button type="default">← Regresar al listado</a-button>
         </router-link>
         <a-button @click="downloadPDF(payment.id)" type="primary" style="margin-left: 8px;">
-          Descargar Pago
+          Descargar Comprobante
           <DownloadOutlined />
         </a-button>
       </div>
@@ -51,21 +51,31 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import apiClient from '@/api'; // Asegúrate de que la ruta a apiClient es correcta
-import { DownloadOutlined } from '@ant-design/icons-vue'; // Importa el ícono desde Ant Design Vue
+import apiClient from '@/api';
+import { DownloadOutlined } from '@ant-design/icons-vue';
 
-const payment = ref<any>(null); // Almacena los detalles del pago
-const isLoading = ref(true); // Estado de carga
+const payment = ref<any>(null);
+const isLoading = ref(true);
 
-const route = useRoute(); // Obtiene la información de la ruta
+const route = useRoute();
+const id = Number(route.params.id);
 
-const id = Number(route.params.id); // Obtiene el ID del pago desde los parámetros de la ruta
+const monthNames = [
+  '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
 
-// Computed properties
+const monthPaidName = computed(() => {
+  if (payment.value && payment.value.month_paid) {
+    return monthNames[payment.value.month_paid] || 'Mes desconocido';
+  }
+  return '';
+});
+
 const formattedPaymentDate = computed(() => {
   if (payment.value) {
     const date = new Date(payment.value.payment_date);
-    return date.toLocaleDateString(); // Cambia el formato de la fecha según sea necesario
+    return date.toLocaleDateString();
   }
   return '';
 });
@@ -77,15 +87,14 @@ const formattedAmount = computed(() => {
   return '';
 });
 
-// Métodos
 const fetchPaymentDetails = async (id: number) => {
   try {
     const response = await apiClient.get(`/payments/${id}`);
     payment.value = response.data;
-    isLoading.value = false; // Cambia el estado de carga a false
+    isLoading.value = false;
   } catch (error) {
     console.error('Error al cargar los detalles del pago:', error);
-    isLoading.value = false; // Cambia el estado de carga a false en caso de error
+    isLoading.value = false;
   }
 };
 
@@ -108,13 +117,12 @@ const downloadPDF = async (id: number) => {
   }
 };
 
-// Llamar a la función al montar el componente
 onMounted(() => {
   if (!isNaN(id)) {
     fetchPaymentDetails(id);
   } else {
     console.error('ID de pago no válido:', route.params.id);
-    isLoading.value = false; // Cambia el estado de carga a false si el ID es inválido
+    isLoading.value = false;
   }
 });
 </script>

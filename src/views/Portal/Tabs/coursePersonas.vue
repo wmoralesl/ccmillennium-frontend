@@ -31,9 +31,9 @@
         <span style="font-size: 16px; color: #555;">{{ student.student_full_name }}</span>
       </li>
       <br>
-      <div style="margin: auto;">
-        <a-button @click="downloadPDF(id)">Descargar PDF</a-button>     
-        <a-button @click="downloadXlsx(id)">Descargar XLSX</a-button>
+      <div v-if="students.length" style="margin: auto; text-align: center;">
+        <a-button @click="downloadPDF(id)">Exportar en PDF <FilePdfOutlined /></a-button>     
+      <a-button @click="downloadXlsx(id)">Exportar en XLSX <FileExcelOutlined /></a-button>
       </div>
     </ul>
 
@@ -47,8 +47,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import apiClient from '@/api';
+import  { FilePdfOutlined, FileExcelOutlined } from '@ant-design/icons-vue'; // Importa el icono de
 
 export default defineComponent({
+  components: {
+    FilePdfOutlined,
+    FileExcelOutlined
+  },
   props: {
     id: {
       type: String,

@@ -1,22 +1,15 @@
 <template>
-  <a-card v-if="user" class="user-card" :title="`Usuario: ${user.first_name} ${user.last_name}`" bordered hoverable>
-    <a-row :gutter="16">
-      <a-col span="8">
-        <a-image :width="150" :src="user.photo" shape="circle" size="large" alt="profile_photo"/>
-        <!-- <a-avatar
-            :size="100 "
-            style="color: #f56a00; background-color: #fde3cf; margin-right: 16px;"
-          >
-            U
-          </a-avatar> -->
+  <a-card v-if="user" class="user-card" :title="`${user.first_name || 'No disponible'} ${user.last_name || ''}`" >
+    <a-row :gutter="24">
+      <a-col span="8" class="user-image">
+        <a-image :width="150" :src="user.photo" shape="circle" size="large" alt="profile_photo" />
       </a-col>
       <a-col span="16">
-        <p><strong>ID:</strong> {{ user.id }}</p>
-        <p><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }} {{ user.second_last_name }}</p>
-        <p><strong>Correo:</strong> {{ user.email }}</p>
-        <p><strong>Rol:</strong> <a-tag color="blue">{{ user.role }}</a-tag></p>
+        <p><strong>Usuario:</strong> {{ user.username }}</p>
+        <p><strong>Correo:</strong> {{ formatValue(user.email) }}</p>
+        <p><strong>Rol:</strong> <a-tag color="blue">{{ user.role || 'No disponible' }}</a-tag></p>
         <p><strong>Género:</strong> {{ formatGender(user.gender) }}</p>
-        <p><strong>Teléfono:</strong> {{ user.phone || 'No disponible' }}</p>
+        <p><strong>Teléfono:</strong> {{ formatValue(user.phone) }}</p>
       </a-col>
     </a-row>
 
@@ -28,19 +21,18 @@
         <p><strong>Último Acceso:</strong> {{ formatDate(user.last_login) }}</p>
       </a-col>
       <a-col span="12">
-        <p><strong>Dirección:</strong> {{ user.address || 'No disponible' }}</p>
-        <p><strong>DPI:</strong> {{ user.dpi || 'No disponible' }}</p>
+        <p><strong>Dirección:</strong> {{ formatValue(user.address) }}</p>
+        <p><strong>DPI:</strong> {{ formatValue(user.dpi) }}</p>
       </a-col>
     </a-row>
 
     <a-divider />
 
     <div class="actions" v-if="Myuser && Myuser.role === 'admin'">
-  <a-button @click="goBack" shape="round" type="default">Volver</a-button>
-  <a-button @click="editUser(user.id)" shape="round" type="primary">Editar</a-button>
-  <a-button @click="confirmDeleteUser(user.id)" :loading="loading" shape="round" type="danger">Eliminar</a-button>
-</div>
-
+      <a-button @click="goBack"  type="default">Volver</a-button>
+      <a-button @click="editUser(user.id)"  type="primary">Editar</a-button>
+      <a-button @click="confirmDeleteUser(user.id)" :loading="loading" type="text" danger>Eliminar</a-button>
+    </div>
   </a-card>
 
   <a-spin v-else />
@@ -78,6 +70,9 @@ const fetchUserDetails = async () => {
   }
 };
 
+const formatValue = (value) => {
+  return value ? value : 'No disponible';
+};
 
 const confirmDeleteUser = (id) => {
   Modal.confirm({
@@ -143,17 +138,37 @@ onMounted(fetchUserDetails);
 <style scoped>
 .user-card {
   max-width: 600px;
-  margin: auto;
+  margin: 20px auto; /* Espaciado alrededor del componente */
   border-radius: 10px;
+}
+
+.user-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .actions {
   display: flex;
   justify-content: space-between;
+  margin-top: 16px; /* Espaciado superior para separación */
 }
 
-a-avatar {
-  display: block;
-  margin: 0 auto;
+p {
+  margin: 8px 0; /* Espaciado vertical entre párrafos */
+}
+
+strong {
+  color: #555; /* Color para el texto fuerte */
+}
+
+/* Estilos para botones */
+a-button {
+  transition: background-color 0.3s, color 0.3s; /* Transición suave para hover */
+}
+
+a-button:hover {
+  background-color: #0056b3; /* Cambia el color de fondo al hacer hover */
+  color: white; /* Cambia el color del texto al hacer hover */
 }
 </style>

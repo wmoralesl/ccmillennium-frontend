@@ -1,10 +1,9 @@
-<!-- Componente padre -->
 <template>
-
   <div v-if="content">
+    
     <!-- <a @click="returnList" class="back-link">← Regresar al listado</a> -->
 
-    <div class="content-card">
+    <div  class="content-card">
       <header class="content-header">
         <h2 class="content-title">{{ content.title }}</h2>
         <span class="due-date">{{ formatDate(content.created_at) }}</span>
@@ -16,103 +15,72 @@
         <div class="content-item">
           <strong>Módulo:</strong> <span>{{ content.module_name }}</span>
         </div>
-        <div class="content-item">
-          <strong>Vence:</strong> <span>{{ formatDate(content.due_date) }}</span>
-        </div>
-        <div class="content-item">
-          <strong>Puntos:</strong> <span>{{ content.grade }}</span>
-        </div>
+
+      
       </div>
 
-      <a :href="content.file" target="_blank" class="download-link" v-if="content.file" style="margin-bottom: 16px;">
+      <a :href="content.file" target="_blank" class="download-link" v-if="content.file">
         Descargar archivo
       </a>
-      
-      <!-- Mostrar formulario o mensaje según si ya hay entrega -->
-      <div v-if="!hasSubmitted">
-        <!-- Escucha el evento 'submission-completed' aquí -->
-        <SubmissionForm :assignmentId="assignmentID" @submission-completed="onSubmissionCompleted" />
-      </div>
-      <div v-else>
-        <a-collapse v-model:activeKey="activeKey" collapsible="header">
-          <a-collapse-panel key="1" header="La tarea ya ha sido entregada">
-            <viewSubmission :assignmentId="assignmentID" :studentId="studentId"/>
-          </a-collapse-panel>
-        </a-collapse>
-      </div>
-    </div>
-  </div>
 
-  <div v-else class="loading">
-    <p>Cargando contenido...</p>
-  </div>
+      <!-- Componente de formulario para la entrega -->
+
+    </div>
+     
+    </div>
+    
+    <div v-else class="loading">
+      <p>Cargando contenido...</p>
+    </div>
+
 </template>
 
+
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue';
-import { useStore } from 'vuex';
+import { defineComponent } from 'vue';
 import apiClient from '@/api';
 import router from '@/router';
-import SubmissionForm from '@/views/Portal/Submissions/createSubmission.vue';
-import viewSubmission from '@/views/Portal/Submissions/viewDetailSubmission.vue';
 
 export default defineComponent({
   components: {
-    SubmissionForm,
-    viewSubmission,
+
   },
   props: {
-    assignmentID: {
+    contentID: {
       type: String,
       required: true,
     },
   },
   data() {
     return {
-      content: null as {
-        title: string;
-        description: string;
-        created_at: string;
-        file?: string;
+      content: null as { 
+        id: number; 
+        title: string; 
+        description: string; 
+        created_at: string; 
+        file?: string; 
         module_name: string;
-        due_date: string;
-        grade: string;
+        group: number;
       } | null,
-      hasSubmitted: false, // Variable para verificar si ya hay entrega
     };
   },
-  setup() {
-    const activeKey = ref(['1']);
-    const store = useStore();
-    const studentId = computed(() => store.getters.getUser?.id); // Obtener el ID del estudiante desde el store
-    return { studentId, activeKey };
-  },
   methods: {
+    // Redirige al listado
     returnList() {
-      router.push({ name: 'listartareas' });
+      router.push({ name: 'listarcontenido' });
     },
+
+    // Obtiene los detalles del contenido por ID
     async fetchContent() {
       try {
-        const response = await apiClient.get(`/assignments/${this.assignmentID}/`);
+        const response = await apiClient.get(`/contents/${this.contentID}/`);
         this.content = response.data;
-        await this.checkSubmission(); // Llamar al método para verificar la entrega
       } catch (error) {
-        console.error('Error fetching content:', error);
+        console.error('Error al obtener el contenido:', error);
       }
     },
-    async checkSubmission() {
-  try {
-    // Usa assignmentID y studentId como parámetros en la URL
-    const response = await apiClient.get(`/submissions/?student=${this.studentId}&assignment=${this.assignmentID}`);
 
-    console.log('Asignación filtrada:', response.data);
-
-    // Actualizar la variable hasSubmitted
-    this.hasSubmitted = response.data.length > 0;
-  } catch (error) {
-    console.error('Error checking submission:', error);
-  }
-},
+    // Formatea la fecha para mostrarla en formato legible
     formatDate(dateString: string) {
       const date = new Date(dateString);
       return date.toLocaleDateString('es-ES', {
@@ -123,17 +91,12 @@ export default defineComponent({
         minute: '2-digit',
       });
     },
-    // Método que se ejecuta cuando se completa una entrega en el componente hijo
-    onSubmissionCompleted() {
-      this.hasSubmitted = true;
-    },
   },
   mounted() {
     this.fetchContent();
   },
 });
 </script>
-
 
 <style scoped>
 /* Contenedor principal */

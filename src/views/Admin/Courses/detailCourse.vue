@@ -7,14 +7,14 @@
 
     <!-- Información del curso -->
     <div class="course-details">
-      <h2>{{ course.name }}
+      <h1>{{ course.name }}
 
         <router-link :to="{ name: 'CourseEdit', params: { id: course.id } }">
           <span>
             <EditOutlined />
           </span>
         </router-link>
-      </h2> 
+      </h1> 
     </div>
 
     <!-- Módulos del curso -->
@@ -23,18 +23,35 @@
     
     <a-tabs v-model:activeKey="activeKey" type="card">
       <a-tab-pane key="1" tab="General">
+        <h3>Informacion General del Curso</h3>
+
         <!-- Mostrar tarifas y pagos -->
-      <div class="payment-info">
-        <p>Tarifa de inscripción: {{ course.enrollment_fee || 'N/A' }}</p>
-        <p>Tarifa mensual: {{ course.monthly_fee || 'N/A' }}</p>
-        <p>Número de pagos mensuales: {{ course.total_payments || 'N/A' }}</p>
-      </div>
+        <div class="payment-info">
+    <div class="payment-item">
+      <span class="label">Tarifa de inscripción:</span>
+      <span class="value">{{ course.enrollment_fee ? `Q${course.enrollment_fee}` : 'N/A' }}</span>
+    </div>
+    <div class="payment-item">
+      <span class="label">Tarifa mensual:</span>
+      <span class="value">{{ course.monthly_fee ? `Q${course.monthly_fee}` : 'N/A' }}</span>
+    </div>
+    <div class="payment-item">
+      <span class="label">Número de pagos mensuales:</span>
+      <span class="value">{{ course.total_payments || 'N/A' }}</span>
+    </div>
+    <div class="payment-item">
+      <span class="label">Grupos:</span>
+      <span class="value">{{ course.group_count || 'N/A' }}</span>
+    </div>
+  </div>
       </a-tab-pane>
+
+
       <a-tab-pane key="2" tab="Modulos">
         <CourseModules :courseId="course.id" />
         
       </a-tab-pane>
-    <a-tab-pane key="3" tab="Tab 3">Content of Tab Pane 3</a-tab-pane>
+  
   </a-tabs>
   
 </div>
@@ -93,22 +110,45 @@ export default {
   object-fit: cover;
 }
 
-.course-details {
-  margin-top: 20px;
+
+/* Payment Styles */
+.payment-info {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: auto;
 }
 
-.course-details h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
+.payment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.course-details p {
-  margin: 5px 0;
+.payment-item:last-child {
+  border-bottom: none;
 }
 
-.payment-info p {
+.label {
   font-size: 16px;
-  margin: 10px 0;
+  color: #888;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.highlight {
+  font-size: 20px;       /* Tamaño más grande para resaltar */
+  color: #007acc;        /* Color diferenciado */
+  font-weight: 700;      /* Peso de fuente extra para destacar */
 }
 
 </style>

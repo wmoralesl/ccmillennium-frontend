@@ -24,6 +24,22 @@ const router = useRouter();
 const userId = computed(() => store.getters.getUser?.id);
 const payments = ref<any[]>([]);
 
+// Mapeo de meses
+const monthNames = {
+  1: 'Enero',
+  2: 'Febrero',
+  3: 'Marzo',
+  4: 'Abril',
+  5: 'Mayo',
+  6: 'Junio',
+  7: 'Julio',
+  8: 'Agosto',
+  9: 'Septiembre',
+  10: 'Octubre',
+  11: 'Noviembre',
+  12: 'Diciembre',
+};
+
 // Definir las columnas de la tabla
 const columns = [
   {
@@ -48,6 +64,9 @@ const columns = [
     title: 'Mes Pagado',
     dataIndex: 'month_paid',
     key: 'month_paid',
+    customRender: ({ text }: { text: number }) => {
+      return monthNames[text] || 'Mes desconocido';
+    },
   },
   {
     title: 'Monto',
@@ -69,19 +88,13 @@ const columns = [
 const fetchPayments = async () => {
   try {
     const response = await apiClient.get(`/payments/?enrollment__student=${userId.value}`);
-
+    
     // Ordenar los pagos por fecha de pago (de más reciente a más antiguo)
     payments.value = response.data.sort((a, b) => new Date(b.payment_date) - new Date(a.payment_date));
   } catch (error) {
     console.error('Error fetching payments:', error);
   }
 };
-
-// // Función para ver los detalles de un pago
-// const viewDetails = (id: any) => {
-//   console.log('ID del pago al ver detalles:', id); // Añade este log
-//   router.push({ name: 'viewPayment', params: { id } });
-// };
 
 const downloadPDF = async (id) => {
   try {

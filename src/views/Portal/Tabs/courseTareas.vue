@@ -2,6 +2,7 @@
 <template>
     <a-page-header
     title="Tareas "
+     @back="() => $router.go(-1)"
   >
     <template #extra>
         <router-link :to="{ name: 'crearTarea' }">

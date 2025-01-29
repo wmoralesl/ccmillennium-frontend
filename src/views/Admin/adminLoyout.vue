@@ -25,7 +25,7 @@ import { ref } from 'vue';
 import Topbars from '@/components/topBar.vue';
 import adminNav from '@/components/adminNav.vue';
 
-const collapsed = ref<boolean>(true);
+const collapsed = ref<boolean>(false);
 
 const toggleCollapse = () => {
   collapsed.value = !collapsed.value;

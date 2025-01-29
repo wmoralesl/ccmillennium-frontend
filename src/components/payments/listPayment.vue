@@ -15,7 +15,7 @@
 
   <!-- Input para filtrar por nombre de curso -->
   <a-input
-    placeholder="Buscar por nombre de curso"
+    placeholder="Buscar por estudiante"
     v-model:value="searchQuery"
     style="margin-bottom: 16px; width: 100%;"
     allow-clear
@@ -34,15 +34,21 @@
 import dayjs from 'dayjs';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import apiClient from '@/api'; // Importa el cliente Axios
+import apiClient from '@/api';
 import { PlusOutlined } from '@ant-design/icons-vue';
 
-const pagos = ref<any[]>([]); // Almacena la lista de pagos
-const searchQuery = ref(''); // Almacena la consulta de búsqueda
+const pagos = ref<any[]>([]);
+const searchQuery = ref('');
 const router = useRouter();
 const paginationConfig = ref({
   pageSize: 10,
 });
+
+// Lista de meses en español
+const mesesEspanol = [
+  '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
 
 // Definir las columnas de la tabla
 const columns = [
@@ -68,6 +74,10 @@ const columns = [
     title: 'Mes Pagado',
     dataIndex: 'month_paid',
     key: 'month_paid',
+    customRender: ({ text }: { text: number }) => {
+      // Usar la lista de meses en español para convertir el número al nombre
+      return mesesEspanol[text];
+    },
   },
   {
     title: 'Monto',
@@ -90,11 +100,10 @@ const fetchPayments = async () => {
   try {
     const response = await apiClient.get('/payments/');
 
-    // Ordenar los pagos por la fecha de pago
     pagos.value = response.data.sort((a: any, b: any) => {
       const dateA = new Date(a.payment_date).getTime();
       const dateB = new Date(b.payment_date).getTime();
-      return dateB - dateA; // Ordena de más reciente a más antiguo
+      return dateB - dateA;
     });
   } catch (error) {
     console.error('Error al cargar pagos', error);
@@ -104,12 +113,12 @@ const fetchPayments = async () => {
 // Computed property para filtrar los pagos por nombre de curso
 const filteredPagos = computed(() => {
   if (!searchQuery.value) {
-    return pagos.value; // Si no hay búsqueda, devolver todos los pagos
+    return pagos.value;
   }
 
   const lowerCaseQuery = searchQuery.value.toLowerCase();
   return pagos.value.filter(pago =>
-    pago.course_name.toLowerCase().includes(lowerCaseQuery) // Filtrar por nombre del curso
+    pago.student_name.toLowerCase().includes(lowerCaseQuery)
   );
 });
 
@@ -119,7 +128,6 @@ const viewDetails = (id: any) => {
   router.push({ name: 'viewPayment', params: { id } });
 };
 
-// Cargar pagos al montar el componente
 onMounted(fetchPayments);
 </script>
 

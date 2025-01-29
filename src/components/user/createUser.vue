@@ -1,66 +1,89 @@
 <template>
-  <div>
-    <h1>Crear Nuevo Usuario</h1>
+  <div class="container">
+    <h1 class="mb-4">Crear Nuevo Usuario</h1>
     <form @submit.prevent="submitForm">
-      <div>
-        <label for="first_name">Nombre:</label>
-        <input v-model="user.first_name" id="first_name" required />
+        <!-- Nombre -->
+        <div class="form-group">
+            <label for="first_name">Nombres:</label>
+            <input type="text" v-model="user.first_name" id="first_name" class="form-control" required  />
+        </div>
+        <div class="form-row">
+        <div class="form-group col">
+            <label for="last_name">Primer Apellido:</label>
+            <input type="text" v-model="user.last_name" id="last_name" class="form-control" required />
+        </div>
+        <div class="form-group col">
+            <label for="second_last_name">Segundo Apellido:</label>
+            <input type="text" v-model="user.second_last_name" id="second_last_name" class="form-control" />
+        </div>
       </div>
-      <div>
-        <label for="last_name">Apellido:</label>
-        <input v-model="user.last_name" id="last_name" />
-      </div>
-      <div>
-        <label for="second_last_name">Segundo Apellido:</label>
-        <input v-model="user.second_last_name" id="second_last_name" />
-      </div>
-      <div>
-        <label for="birthdate">Fecha de Nacimiento:</label>
-        <input v-model="user.birthdate" id="birthdate" type="date" />
-      </div>
-      <div>
-        <label for="dpi">DPI:</label>
-        <input v-model="user.dpi" id="dpi" />
-      </div>
-      <div>
-        <label for="email">Correo Electrónico:</label>
-        <input v-model="user.email" id="email" type="email" />
-      </div>
-      <div>
-        <label for="photo">Foto:</label>
-        <input @change="handleFileUpload" id="photo" type="file" accept="image/*" />
-      </div>
-      <div>
-        <label for="gender">Género:</label>
-        <select v-model="user.gender" id="gender">
-          <option value="none">No especifica</option>
-          <option value="male">Hombre</option>
-          <option value="female">Mujer</option>
-        </select>
-      </div>
-      <div>
-        <label for="phone">Teléfono:</label>
-        <input v-model="user.phone" id="phone" type="tel" />
-      </div>
-      <div>
-        <label for="address">Dirección:</label>
-        <input v-model="user.address" id="address" />
-      </div>
-      <div>
-        <label for="role">Rol:</label>
-        <select v-model="user.role" id="role" required>
-          <option value="student">Estudiante</option>
-          <option value="teacher">Maestro</option>
-          <option value="admin">Administrador</option>
-        </select>
-      </div>
-      <div>
-        <label for="password">Contraseña:</label>
-        <input v-model="user.password" id="password" type="password" required />
-      </div>
-      <button type="submit">Crear Usuario</button>
+        <!-- Rol y DPI, Teléfono -->
+        
+            <div class="form-group">
+                <label for="role">Rol:</label>
+                <select v-model="user.role" id="role" class="form-control" required>
+                    <option value="student">Estudiante</option>
+                    <option value="teacher">Maestro</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+            <div class="form-group col">
+                <label for="phone">Teléfono:</label>
+                <input v-model="user.phone" id="phone" type="tel" class="form-control" />
+            </div>
+
+            <div class="form-group col">
+                <label for="email">Correo Electrónico:</label>
+                <input v-model="user.email" id="email" type="email" class="form-control" />
+            </div>
+        </div>
+
+            
+        
+       
+
+        <!-- Fecha de Nacimiento y Género -->
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="birthdate">Fecha de Nacimiento:</label>
+                <input v-model="user.birthdate" id="birthdate" type="date" class="form-control" />
+            </div>
+            <div class="form-group col">
+                <label for="gender">Género:</label>
+                <select v-model="user.gender" id="gender" class="form-control">
+                    <option value="none">No especifica</option>
+                    <option value="male">Hombre</option>
+                    <option value="female">Mujer</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+                <label for="dpi">DPI:</label>
+                <input type="text" v-model="user.dpi" id="dpi" class="form-control" />
+            </div>
+
+        <div class="form-group">
+            <label for="address">Dirección:</label>
+            <input type="text" v-model="user.address" id="address" class="form-control" />
+        </div>
+
+            <div class="form-group">
+                <label for="photo">Foto:</label>
+                <input @change="handleFileUpload" id="photo" type="file" accept="image/*" class="form-control-file" />
+            </div>
+
+
+        <!-- Dirección -->
+        
+
+        <button type="submit" class="btn btn-primary">Crear Usuario</button>
     </form>
-  </div>
+</div>
+
+
 </template>
 
 <script>
@@ -127,3 +150,99 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+.container{
+  width: 600px;
+  margin: 0 auto;
+}
+h2 {
+  font-size: 24px; /* Tamaño del encabezado */
+  margin-bottom: 20px; /* Espacio inferior */
+  color: #333; /* Color del texto */
+}
+
+/* Estilo para los enlaces */
+a {
+  font-size: 14px; /* Tamaño de fuente */
+  color: #007bff; /* Color del enlace */
+  text-decoration: none; /* Sin subrayado */
+}
+
+a:hover {
+  text-decoration: underline; /* Subrayado en hover */
+}
+
+/* Estilos para los grupos de formulario */
+.form-group {
+  margin-bottom: 16px; /* Espacio inferior entre campos */
+  flex: 1; /* Ocupa espacio igual */
+    min-width: 200px; /* Ancho mínimo para cada columna */
+    margin-right: 10px; /* Espaciado entre columnas */
+
+}
+
+
+/* Estilos para las etiquetas de los campos */
+label {
+  display: block; /* Hacer que las etiquetas ocupen todo el ancho */
+  margin-bottom: 8px; /* Espacio inferior */
+  font-weight: 600; /* Negrita */
+  color: #555; /* Color de la etiqueta */
+}
+
+/* Estilos para los inputs y textarea */
+input[type="text"],
+input[type="datetime-local"],
+input[type="number"],
+input[type="tel"],
+input[type="file"],
+input[type="date"],
+input[type="email"],
+textarea,
+select {
+  width: 100%; /* Ancho completo */
+  padding: 10px; /* Espaciado interno */
+  border: 1px solid #ccc; /* Borde sutil */
+  border-radius: 4px; /* Bordes redondeados */
+  font-size: 16px; /* Tamaño de fuente */
+  transition: border-color 0.3s; /* Transición suave para el borde */
+}
+
+input[type="text"]:focus,
+input[type="datetime-local"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #007bff; /* Cambio de color del borde al enfocar */
+  outline: none; /* Sin borde de enfoque */
+}
+
+/* Estilos para el botón */
+button[type="submit"] {
+  padding: 10px 15px; /* Espaciado interno */
+  background-color: #007bff; /* Color de fondo */
+  color: #fff; /* Color del texto */
+  border: none; /* Sin borde */
+  border-radius: 4px; /* Bordes redondeados */
+  cursor: pointer; /* Cursor tipo puntero */
+  font-size: 16px; /* Tamaño de fuente */
+  transition: background-color 0.3s; /* Transición suave para el fondo */
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3; /* Color más oscuro al hacer hover */
+}
+
+/* Estilos para el campo de archivo */
+input[type="file"] {
+  margin-top: 8px; /* Espacio superior */
+}
+.form-row {
+    display: flex; /* Muestra los elementos en fila */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no hay suficiente espacio */
+}
+
+   
+</style>

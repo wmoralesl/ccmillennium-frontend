@@ -44,6 +44,13 @@
         <span>Usuarios</span>
       </router-link>
     </a-menu-item>
+
+    <a-menu-item key="6">
+      <router-link to="/predictions">
+        <CameraOutlined />
+        <span>Identificaciones</span>
+      </router-link>
+    </a-menu-item>
   </a-menu>
 </template>
 
@@ -55,7 +62,7 @@ import {
   TeamOutlined,
   DollarOutlined,
   // ProfileOutlined,
-  // UploadOutlined,
+  CameraOutlined,
   UserOutlined
 } from '@ant-design/icons-vue';
 

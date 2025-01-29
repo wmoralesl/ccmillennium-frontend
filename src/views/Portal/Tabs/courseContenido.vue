@@ -2,6 +2,7 @@
   <div>
     <a-page-header
     title="Contenido "
+     @back="() => $router.go(-1)"
   >
     <template #extra>
         <router-link :to="{ name: 'crearContenido' }">

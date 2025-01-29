@@ -20,8 +20,8 @@
         show-icon
         class="mb-3"
       />
-
-      <!-- Mostrar error de username si existe -->
+    
+      <!-- Campo de username con ícono -->
       <a-form-item
         label="Nombre de Usuario"
         name="username"
@@ -29,10 +29,14 @@
         :help="errors.username"
         :rules="[{ required: true, message: 'El nombre de usuario es obligatorio.' }]"
       >
-        <a-input v-model:value="formState.username" autocomplete="username"/>
+        <a-input v-model:value="formState.username" autocomplete="username">
+          <template #prefix>
+            <UserOutlined />
+          </template>
+        </a-input>
       </a-form-item>
 
-      <!-- Mostrar error de contraseña si existe -->
+      <!-- Campo de password con ícono -->
       <a-form-item
         label="Contraseña"
         name="password"
@@ -40,8 +44,11 @@
         :help="errors.password"
         :rules="[{ required: true, message: 'La contraseña es obligatoria.' }]"
       >
-      <a-input-password v-model:value="formState.password" autocomplete="password" />
-
+        <a-input-password v-model:value="formState.password" autocomplete="password">
+          <template #prefix>
+            <LockOutlined />
+          </template>
+        </a-input-password>
       </a-form-item>
 
       <!-- Botón de Enviar -->
@@ -52,53 +59,51 @@
   </div>
 </template>
 
-
 <script lang="ts">
-/* eslint-disable */
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import apiClient from '@/api'; // Importa la instancia de Axios
+import apiClient from '@/api';
 import { AxiosError } from 'axios';
+
+// Importar iconos
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 
 export default {
   name: 'MyLogin',
+  components: {
+    UserOutlined,
+    LockOutlined,
+  },
   setup() {
+    document.title = "Millennium";
     const generalError = ref<string>('');
     const router = useRouter();
     const store = useStore(); 
-    // Definir el estado del formulario
     const formState = reactive({
       username: '',
       password: '',
     });
-
-    // Definir los errores
     const errors = reactive({
       username: '',
       password: ''
     });
 
     const clearCookies = async () => {
-    const response = await apiClient.post('/logout/');
-    store.dispatch('setAuth', false);
-    store.commit('clearUser');
+      const response = await apiClient.post('/logout/');
+      store.dispatch('setAuth', false);
+      store.commit('clearUser');
     }
 
-    // Función para manejar el envío del formulario
     const onFinish = async () => {
-      // Limpiar errores
       errors.username = '';
       errors.password = '';
       generalError.value = '';
 
       try {
-        // Solicitud de inicio de sesión
         const response = await apiClient.post('/login/', formState, {
-          withCredentials: true, // Incluir cookies
+          withCredentials: true,
         });
-
-        // Obtener los detalles del usuario
         const userResponse = await apiClient.get('/user/', {
           withCredentials: true,
         });
@@ -108,8 +113,6 @@ export default {
           const role = user.role;
 
           store.commit('setUser', user);
-
-          // Redirigir según el rol del usuario
           if (role === 'admin') {
             await router.push('/admin');
           } else {
@@ -119,11 +122,9 @@ export default {
           throw new Error('No user data received');
         }
       } catch (error) {
-        // Aserción de tipo para AxiosError
         const axiosError = error as AxiosError;
 
         if (axiosError.response) {
-          // Asegúrate de que response.data es un objeto y tiene la propiedad 'detail'
           const data = axiosError.response.data as { detail?: string };
 
           if (data.detail) {
@@ -144,7 +145,6 @@ export default {
       }
     };
 
-    // Función para manejar el fallo del envío del formulario
     const onFinishFailed = (errorInfo: any) => {
       console.log('Failed:', errorInfo);
       generalError.value = 'Por favor llenar los campos';
@@ -186,4 +186,3 @@ export default {
   margin-bottom: 16px;
 }
 </style>
-

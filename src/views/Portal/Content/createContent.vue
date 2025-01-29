@@ -1,50 +1,42 @@
 <template>
   <!-- <a @click="returnList()">← Regresar al listado</a> -->
   <div class="container">
-    <h2>Crear tarea</h2>
-    <form @submit.prevent="submitForm" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="title">Título</label>
-        <input type="text" v-model="form.title" required />
-      </div>
-      <div class="form-group">
-        <label for="description">Descripción</label>
-        <textarea v-model="form.description" required></textarea>
-      </div>
-      <div class="form-group">
-        <label for="due_date">Fecha de entrega</label>
-        <input type="datetime-local" v-model="form.due_date" required />
-      </div>
-      <div class="form-group">
-        <label for="module">Módulo</label>
-        <select v-model="form.module" required>
-          <option disabled value="">Selecciona un módulo</option>
-          <option v-for="module in modules" :key="module.id" :value="module.id">
-            {{ module.name }}
-          </option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="file">Archivo</label>
-        <input type="file" @change="handleFileUpload" />
-      </div>
+      <h2>Subir Contenido</h2>
+      <form @submit.prevent="submitForm" enctype="multipart/form-data">
 
-      <div class="form-group">
-        <label for="grade">Calificación</label>
-        <input type="number" v-model="form.grade" />
-      </div>
-
-      <button type="submit">Guardar</button>
-    </form>
-  </div>
-</template>
-
-<script>
-import apiClient from '@/api';
+        <div class="form-group">
+          <label for="title">Título</label>
+          <input type="text" v-model="form.title" required />
+        </div>
+        <div class="form-group">
+          <label for="description">Descripción</label>
+          <textarea v-model="form.description" ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="module">Módulo</label>
+          <select v-model="form.module" required>
+            <option disabled value="">Selecciona un módulo</option>
+            <option v-for="module in modules" :key="module.id" :value="module.id">
+              {{ module.name }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="file">Archivo</label>
+          <input type="file" @change="handleFileUpload" />
+        </div>
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+  </template>
+  
+  
+  <script>
+import apiClient from '@/api'
 import router from '@/router';
+
 export default {
   props: {
-    assignment: Object,
     id: {
       type: String,
       required: true
@@ -52,21 +44,18 @@ export default {
   },
   data() {
     const returnList = () => {
-        router.push({ name: 'listartareas'});
+        router.push({ name: 'listarcontenido'});
         };
-    
     return {
       form: {
         title: '',
         description: '',
-        due_date: '',
-        grade: null,
         module: null,
-        file: null // Para almacenar el archivo
+        file: null // Agrega el archivo aquí
       },
-      modules: [], // Para almacenar los módulos del grupo
-      returnList
-    };
+      modules: [],
+      returnList,
+    }
   },
   watch: {
     id: {
@@ -83,8 +72,6 @@ export default {
       this.form = {
         title: '',
         description: '',
-        due_date: '',
-        grade: null,
         module: null,
         file: null // Resetea el archivo
       };
@@ -105,35 +92,30 @@ export default {
       const formData = new FormData();
       formData.append('title', this.form.title);
       formData.append('description', this.form.description);
-      formData.append('due_date', this.form.due_date);
       formData.append('module', this.form.module);
       formData.append('group', this.id);
-
-      if (this.form.grade !== null) {
-        formData.append('grade', this.form.grade);
-      }
 
       if (this.form.file) {
         formData.append('file', this.form.file); // Agrega el archivo al FormData
       }
 
       try {
+        
           // Crear nueva asignación
-          await apiClient.post('/assignments/', formData, {
+          await apiClient.post('/contents/', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           });
-        
         this.$emit('submit', formData);
         this.resetForm();
         this.returnList();
       } catch (error) {
-        console.error('Error saving assignment:', error);
+        console.error('Error saving content:', error);
       }
     }
   }
-};
+}
 </script>
 
 <style scoped>
