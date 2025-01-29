@@ -1,0 +1,196 @@
+
+<div class="container">
+  <!-- Titulo -->
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="text-center">Identificador de Plagas</h2>
+    </div>
+  </div>
+  <!-- Iniciar Identificador -->
+  <div class="row">
+    <div class="col-md-12 text-center mt-3" id="init_button">
+      <button type="button" class="btn btn-primary" onclick="init()">
+        Iniciar <i class="fas fa-robot"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Camara -->
+  <div class="row mt-3">
+    <div class="col-md-6 offset-md-3 text-center">
+      <div id="webcam-container"></div>
+    </div>
+  </div>
+
+  <!-- Result container -->
+  <div class="row mt-3" hidden>
+    <div class="col-md-6 offset-md-3">
+      <div id="label-container"></div>
+    </div>
+  </div>
+
+  <!-- Boton Captura -->
+  <div class="row">
+    <div class="col-md-12 text-center mt-3">
+      <div id="capturar"></div>
+    </div>
+  </div>
+
+  <!-- <button type="button" onclick="captureImage()">Capture Image</button> -->
+  <!-- <button type="button" onclick="completValues()">Valores Mayores</button> -->
+
+  <!-- Form VERDADERO -->
+  <div>
+    <form
+      id="image-form"
+      method="post"
+      enctype="multipart/form-data"
+      class="needs-validation"
+      novalidate
+    >
+      <div hidden>
+        {% csrf_token %} {{form}}
+      </div>
+      <div class="text-center" id="buton-form">
+      </div>
+    </form>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+  // the link to your model provided by Teachable Machine export panel
+  const URL = "https://teachablemachine.withgoogle.com/models/bmF3mt_i3/";
+
+  let model, webcam, labelContainer, maxPredictions;
+  let mayor = 0;
+  let plague_id = 0;
+  let isCaptured = false;
+  let captura = document.getElementById("capturar");
+
+  // Load the image model and setup the webcam
+  async function init() {
+    let initB = document.getElementById("init_button");
+    initB.innerHTML =
+      '<div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;>' +
+      '<span class="visually-hidden"></span>' +
+      "</div>";
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+
+    // load the model and metadata
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+
+    // Setup a webcam
+    const flip = false; // whether to flip the webcam
+    webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+    await webcam.setup(); // request access to the webcam
+    await webcam.play();
+    window.requestAnimationFrame(loop);
+    initB.innerHTML = "";
+
+    // append elements to the DOM
+    document.getElementById("webcam-container").appendChild(webcam.canvas);
+    labelContainer = document.getElementById("label-container");
+    for (let i = 0; i < maxPredictions; i++) {
+      // and class labels
+      labelContainer.appendChild(document.createElement("div"));
+    }
+    
+    captura.innerHTML =
+      '<button type="button" class="btn btn-primary" onclick="captureImage()">Capturar <i class="bi bi-camera-fill"></i></button>';
+  }
+
+  async function loop() {
+    if (!isCaptured) {
+      webcam.update(); // update the webcam frame only if not captured
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+  }
+
+  // run the webcam image through the image model
+  async function predict() {
+    const prediction = await model.predict(webcam.canvas);
+    const percent = document.getElementById("id_percentage");
+    for (let i = 0; i < maxPredictions; i++) {
+      const classPrediction =
+        prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+
+      if (prediction[i].probability >= mayor) {
+        mayor = prediction[i].probability.toFixed(2);
+        plague_id = i + 1;
+      }
+      labelContainer.childNodes[i].innerHTML = classPrediction;
+
+      mayor = 0;
+    }
+  }
+
+  let capturedImageBlob = null; // Variable global para almacenar la imagen capturada
+
+  async function captureImage() {
+    // Completar otros valores del formulario si es necesario
+    formb = document.getElementById("buton-form")
+    captura.innerHTML =
+  '<div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;">' +
+  '<span class="visually-hidden"></span>' +
+  "</div>";
+
+  setTimeout(function() {
+  // Cambiar el contenido de captura después de 3 segundos
+    captura.innerHTML = ''
+    formb.innerHTML = '<button type="submit" class="btn btn-primary">Ver Resultado <i class="bi bi-person-bounding-box"></i></button>';
+    }, 3000);
+    isCaptured = true;
+    completValues();
+
+    // Obtener el canvas
+    const canvas = webcam.canvas;
+
+    // Convertir el canvas a un Blob
+    canvas.toBlob(function (blob) {
+      capturedImageBlob = blob; // Almacenar el blob en la variable global
+
+      // Crear un objeto File desde el Blob
+      const file = new File([blob], "captured_image.png", {
+        type: "image/png",
+      });
+
+      // Simular la selección de archivos en el campo de tipo file
+      const capturedImageInput = document.getElementById("id_image");
+      const files = new DataTransfer();
+      files.items.add(file);
+      capturedImageInput.files = files.files;
+
+      console.log("Imagen capturada exitosamente");
+    }, "image/png");
+  }
+
+  async function completValues() {
+    mayor = 0;
+    plague_id = 0;
+    let percent = document.getElementById("id_percentage");
+    let plague = document.getElementById("id_plague");
+    const prediction = await model.predict(webcam.canvas);
+
+    for (let i = 0; i < maxPredictions; i++) {
+      const classPrediction =
+        prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+
+      if (prediction[i].probability >= mayor) {
+        mayor = prediction[i].probability.toFixed(2);
+        plague_id = i + 1;
+        percent.value = mayor;
+        plague.value = plague_id;
+        name = prediction[i].className;
+      }
+      labelContainer.childNodes[i].innerHTML = classPrediction;
+    }
+    console.log(mayor + "plaga");
+    console.log(plague_id);
+    console.log(name);
+  }
+</script>
+
