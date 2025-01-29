@@ -21,9 +21,6 @@
       <a-tab-pane key="5" tab="Calificaciones" v-if="userRole=='teacher'">
         <Calificiones :id="id" />
       </a-tab-pane>
-      <a-tab-pane key="6" tab="Herramienta">
-        <HerramientaCourse />
-      </a-tab-pane>
     </a-tabs>
   </div>
 </template>
@@ -34,7 +31,6 @@ import GeneralCourse from '@/views/Portal/Tabs/courseGeneral.vue';
 import ContenidoCourse from '@/views/Portal/Tabs/courseContenido.vue';
 import TareaCourse from '@/views/Portal/Tabs/courseTareas.vue';
 import PersonasCourse from '@/views/Portal/Tabs/coursePersonas.vue';
-import HerramientaCourse from '@/views/Portal/Tabs/courseHerramienta3.vue';
 import Calificiones from '@/views/Portal/Tabs/courseCalificaciones.vue'
 import router from '@/router';
 import { useStore } from 'vuex';
@@ -44,7 +40,6 @@ export default defineComponent({
     ContenidoCourse,
     TareaCourse,
     PersonasCourse,
-    HerramientaCourse,
     Calificiones,
   },
   props: {
